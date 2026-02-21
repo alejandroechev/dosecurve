@@ -38,6 +38,9 @@ export default function Toolbar({
           </button>
         </>
       )}
+      <button className="btn" onClick={() => window.open('/intro.html', '_blank')}>
+        📖 Guide
+      </button>
       <button className="btn" onClick={onToggleTheme}>
         {theme === 'light' ? '🌙' : '☀️'}
       </button>

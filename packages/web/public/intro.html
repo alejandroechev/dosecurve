@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DoseCurve — Guide to Dose-Response Analysis</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a2e;
+    --muted: #555;
+    --border: #ddd;
+    --code-bg: #f5f5f5;
+    --accent: #2563eb;
+    --accent-light: #e8f0fe;
+    --card-bg: #fafafa;
+    --heading: #0f172a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a;
+      --fg: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #334155;
+      --code-bg: #1e293b;
+      --accent: #60a5fa;
+      --accent-light: #1e293b;
+      --card-bg: #1e293b;
+      --heading: #f1f5f9;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    padding: 2rem 1rem 4rem;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .hero h1 { font-size: 2.4rem; color: var(--heading); margin-bottom: 0.3rem; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { font-size: 1.15rem; color: var(--muted); }
+
+  /* Sections */
+  section { margin-bottom: 2.5rem; }
+  h2 {
+    font-size: 1.5rem;
+    color: var(--heading);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.3rem;
+    margin-bottom: 1rem;
+  }
+  h3 { font-size: 1.15rem; color: var(--heading); margin: 1.2rem 0 0.5rem; }
+  p { margin-bottom: 0.8rem; }
+  ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    background: var(--code-bg);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  pre {
+    background: var(--code-bg);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    margin: 0.8rem 0 1rem;
+    border: 1px solid var(--border);
+  }
+  pre code { background: none; padding: 0; }
+  .equation {
+    text-align: center;
+    font-size: 1.1rem;
+    padding: 1rem;
+    background: var(--accent-light);
+    border-radius: 6px;
+    margin: 1rem 0;
+    font-family: 'Georgia', serif;
+    border: 1px solid var(--border);
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+  }
+  .glossary-term { font-weight: 600; color: var(--accent); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  th { background: var(--code-bg); font-weight: 600; }
+  .step-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 1.6rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<a href="/" class="back-link">← Back to DoseCurve</a>
+
+<!-- Hero -->
+<div class="hero">
+  <h1><span>Dose</span>Curve</h1>
+  <p>Free, browser-based dose-response analysis &amp; IC50 determination</p>
+</div>
+
+<!-- 1. What is a Dose-Response Curve? -->
+<section>
+  <h2>What is a Dose-Response Curve?</h2>
+  <p>
+    A dose-response curve describes the relationship between the concentration of a drug
+    (or other compound) and the magnitude of the biological effect it produces. This is one
+    of the most fundamental concepts in pharmacology, toxicology, and drug discovery.
+  </p>
+  <p>
+    As the drug concentration increases from very low to very high, the response typically
+    follows a characteristic <strong>sigmoidal</strong> (S-shaped) pattern when plotted on a
+    logarithmic dose axis:
+  </p>
+  <ul>
+    <li><strong>At low concentrations</strong> — the response is near its baseline (no drug effect).</li>
+    <li><strong>At intermediate concentrations</strong> — the response changes steeply as receptors become increasingly occupied.</li>
+    <li><strong>At high concentrations</strong> — the response plateaus as all available receptors are saturated.</li>
+  </ul>
+  <p>
+    This sigmoidal shape arises from the underlying receptor-ligand binding equilibrium.
+    The steepness and position of the curve encode critical pharmacological information
+    about the compound's potency and mechanism of action.
+  </p>
+</section>
+
+<!-- 2. IC50 and Hill Slope -->
+<section>
+  <h2>IC50 and Hill Slope</h2>
+
+  <h3>IC50 — The Half-Maximal Inhibitory Concentration</h3>
+  <p>
+    The <strong>IC50</strong> is the concentration of a compound needed to inhibit the
+    biological response by 50% of its maximal effect. It is the single most commonly
+    reported metric in dose-response analysis and serves as a standard measure of
+    drug <strong>potency</strong>.
+  </p>
+  <p>
+    A lower IC50 means the drug is more potent — it achieves half-maximal effect at a
+    smaller concentration. Note that potency (IC50) is distinct from
+    <strong>efficacy</strong>, which refers to the maximum effect a drug can achieve
+    regardless of dose.
+  </p>
+
+  <h3>Hill Slope (Hill Coefficient)</h3>
+  <p>
+    The <strong>Hill slope</strong> (also called the Hill coefficient, <em>n</em>) describes
+    the steepness of the dose-response curve at the IC50 point. It reflects the
+    cooperativity of ligand binding:
+  </p>
+  <table>
+    <tr><th>Hill Slope</th><th>Interpretation</th></tr>
+    <tr><td><code>n = 1</code></td><td>Standard mass-action binding; no cooperativity</td></tr>
+    <tr><td><code>n &gt; 1</code></td><td>Positive cooperativity (steeper curve); binding of one ligand facilitates the next</td></tr>
+    <tr><td><code>n &lt; 1</code></td><td>Negative cooperativity (shallower curve); or heterogeneous receptor populations</td></tr>
+  </table>
+  <p>
+    Most single-site receptor interactions produce a Hill slope near 1.0. Deviations
+    suggest multi-site interactions, multiple receptor subtypes, or non-specific effects.
+  </p>
+</section>
+
+<!-- 3. The 4PL Model -->
+<section>
+  <h2>The 4-Parameter Logistic (4PL) Model</h2>
+  <p>
+    The 4PL equation is the gold-standard model for fitting sigmoidal dose-response data:
+  </p>
+  <div class="equation">
+    y = Bottom + (Top − Bottom) / (1 + (x / IC50)<sup>n</sup>)
+  </div>
+  <p>Each of the four parameters has a clear biological or practical meaning:</p>
+  <div class="card">
+    <table>
+      <tr><th>Parameter</th><th>Meaning</th></tr>
+      <tr><td><strong>Bottom</strong></td><td>Response at zero drug concentration (baseline). For inhibition curves, this is the maximum uninhibited response.</td></tr>
+      <tr><td><strong>Top</strong></td><td>Response at infinite drug concentration (full effect plateau). For inhibition, this approaches the fully inhibited level.</td></tr>
+      <tr><td><strong>IC50</strong></td><td>Concentration producing a response halfway between Top and Bottom.</td></tr>
+      <tr><td><strong>n (Hill slope)</strong></td><td>Steepness of the transition region. Controls how sharply the curve transitions between plateaus.</td></tr>
+    </table>
+  </div>
+
+  <h3>Why 4PL instead of 3PL?</h3>
+  <p>
+    A 3-parameter model fixes the Bottom at 0 (or Top at 100%), assuming you know the
+    baseline exactly. The 4PL model lets both plateaus float, which is more robust when:
+  </p>
+  <ul>
+    <li>The assay baseline isn't exactly zero</li>
+    <li>Maximum inhibition doesn't reach 100%</li>
+    <li>There is non-specific binding or background signal</li>
+  </ul>
+  <p>
+    For most real-world assays, the 4PL model produces better fits and more accurate IC50 estimates.
+  </p>
+</section>
+
+<!-- 4. Curve Fitting -->
+<section>
+  <h2>Curve Fitting</h2>
+
+  <h3>Levenberg-Marquardt Optimization</h3>
+  <p>
+    DoseCurve uses the <strong>Levenberg-Marquardt</strong> (L-M) algorithm to fit the 4PL
+    model to your data. L-M is an iterative nonlinear least-squares optimizer that blends
+    gradient descent (stable but slow) with Gauss-Newton (fast but unstable), adapting its
+    strategy at each step:
+  </p>
+  <div class="equation">
+    Δp = (J<sup>T</sup>J + λI)<sup>−1</sup> J<sup>T</sup>r
+  </div>
+  <p>
+    Where <strong>J</strong> is the Jacobian matrix of partial derivatives,
+    <strong>r</strong> is the residual vector, and <strong>λ</strong> is the damping
+    parameter. When λ is large, the algorithm behaves like gradient descent; when small,
+    it behaves like Gauss-Newton.
+  </p>
+
+  <h3>R² — Goodness of Fit</h3>
+  <p>
+    The coefficient of determination (R²) measures how well the fitted curve explains
+    the variance in your data:
+  </p>
+  <div class="equation">
+    R² = 1 − SS<sub>res</sub> / SS<sub>tot</sub>
+  </div>
+  <p>
+    An R² close to 1.0 indicates an excellent fit. Values below 0.95 may suggest the data
+    doesn't follow a standard sigmoidal pattern, or there are outliers that need attention.
+  </p>
+
+  <h3>95% Confidence Intervals</h3>
+  <p>
+    DoseCurve computes 95% confidence intervals for each fitted parameter using the
+    Jacobian-based covariance matrix approach:
+  </p>
+  <ol>
+    <li>Compute the Jacobian <strong>J</strong> at the best-fit parameters</li>
+    <li>Estimate the covariance matrix: <code>Cov = s² × (J<sup>T</sup>J)<sup>−1</sup></code></li>
+    <li>Standard errors are the square roots of the diagonal of <strong>Cov</strong></li>
+    <li>95% CI = parameter ± t<sub>0.025</sub> × SE</li>
+  </ol>
+  <p>
+    The CI for IC50 is especially important — a wide CI signals that the IC50 estimate
+    is uncertain, possibly because data points are sparse near the inflection point.
+  </p>
+</section>
+
+<!-- 5. Practical Considerations -->
+<section>
+  <h2>Practical Considerations</h2>
+
+  <h3>Serial Dilutions</h3>
+  <p>
+    Dose-response experiments typically use <strong>serial dilutions</strong> — each
+    successive concentration is a fixed multiple (e.g., 3× or 10×) of the previous one.
+    This produces evenly spaced points on the log-dose axis, which is essential for
+    adequately sampling both plateaus and the steep transition region.
+  </p>
+
+  <h3>Log-Dose Axis</h3>
+  <p>
+    Concentrations are always plotted on a <strong>logarithmic scale</strong>. On a linear
+    scale, the sigmoidal curve would appear as a step function with most points compressed
+    at the left. The log scale reveals the full sigmoidal shape and allows visual
+    comparison of IC50 values.
+  </p>
+
+  <h3>Normalization</h3>
+  <p>
+    Raw assay readings (absorbance, fluorescence, luminescence) are often normalized to
+    percent activity or percent inhibition. Common approaches:
+  </p>
+  <ul>
+    <li><strong>% Inhibition</strong> = 100 × (1 − (sample − blank) / (control − blank))</li>
+    <li><strong>% Activity</strong> = 100 × (sample − blank) / (control − blank)</li>
+  </ul>
+  <p>
+    Normalization ensures that Top and Bottom parameters have intuitive meaning
+    (e.g., 100% and 0%) and makes results comparable across experiments.
+  </p>
+
+  <h3>Replicate Handling</h3>
+  <p>
+    Running replicates (typically 2–4 per concentration) is critical for statistical
+    confidence. DoseCurve automatically:
+  </p>
+  <ul>
+    <li>Detects replicate columns in pasted data</li>
+    <li>Computes the <strong>mean</strong> and <strong>SEM</strong> (standard error of the mean) for each concentration</li>
+    <li>Displays error bars on the chart</li>
+    <li>Fits the curve to the mean values</li>
+  </ul>
+</section>
+
+<!-- 6. How to Use DoseCurve -->
+<section>
+  <h2>How to Use DoseCurve</h2>
+  <p>
+    <span class="step-num">1</span>
+    <strong>Paste your data</strong> — Enter concentration-response data into the text
+    area. Use tab-separated columns: the first column is concentration, and subsequent
+    columns are response replicates. Include a header row.
+  </p>
+  <p>
+    <span class="step-num">2</span>
+    <strong>Click "Fit Curve"</strong> — DoseCurve will parse your data, compute mean ± SEM
+    for replicates, and fit the 4PL model using Levenberg-Marquardt optimization.
+  </p>
+  <p>
+    <span class="step-num">3</span>
+    <strong>Review results</strong> — The results panel shows IC50 (with 95% CI), Hill slope,
+    Top, Bottom, and R². The chart displays your data points with error bars and the fitted
+    sigmoidal curve with an IC50 annotation line.
+  </p>
+  <p>
+    <span class="step-num">4</span>
+    <strong>Export</strong> — Download the chart as PNG or SVG for publications, or export
+    the full results (fitted parameters + curve data) as a CSV file.
+  </p>
+</section>
+
+<!-- 7. Glossary -->
+<section>
+  <h2>Glossary</h2>
+  <div class="card">
+    <p><span class="glossary-term">IC50</span> — Half-maximal inhibitory concentration. The drug concentration that reduces the response to 50% of its maximum.</p>
+    <p><span class="glossary-term">EC50</span> — Half-maximal effective concentration. Similar to IC50 but used for stimulatory (agonist) dose-response curves.</p>
+    <p><span class="glossary-term">Hill Slope</span> — The steepness coefficient of the dose-response curve. Also called the Hill coefficient (n). Reflects binding cooperativity.</p>
+    <p><span class="glossary-term">4PL</span> — 4-Parameter Logistic model. The standard sigmoidal equation with Bottom, Top, IC50, and Hill slope as free parameters.</p>
+    <p><span class="glossary-term">Levenberg-Marquardt</span> — An iterative nonlinear least-squares optimization algorithm that blends gradient descent and Gauss-Newton methods.</p>
+    <p><span class="glossary-term">R²</span> — Coefficient of determination. Fraction of data variance explained by the model, ranging from 0 (no fit) to 1 (perfect fit).</p>
+    <p><span class="glossary-term">Confidence Interval</span> — A range of values within which the true parameter value is expected to lie with a given probability (typically 95%).</p>
+    <p><span class="glossary-term">SEM</span> — Standard Error of the Mean. SEM = SD / √n, quantifying the precision of the mean estimate from replicates.</p>
+  </div>
+</section>
+
+<!-- 8. References -->
+<section>
+  <h2>References</h2>
+  <ul>
+    <li>Motulsky, H. &amp; Christopoulos, A. <em>Fitting Models to Biological Data using Linear and Nonlinear Regression</em>. Oxford University Press, 2004.</li>
+    <li>Rang, H. P. et al. <em>Rang &amp; Dale's Pharmacology</em>. 9th ed. Elsevier, 2019.</li>
+    <li>GraphPad. <a href="https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_dr_stim_variable_2.htm" target="_blank">Dose-Response Curve Fitting Guide</a>.</li>
+    <li>NIH/NCATS. <a href="https://ncats.nih.gov/preclinical/core/compound-management/quantitative-high-throughput-screening" target="_blank">Quantitative High-Throughput Screening (qHTS)</a>.</li>
+    <li>Hill, A. V. "The possible effects of the aggregation of the molecules of hæmoglobin on its dissociation curves." <em>J. Physiol.</em> 40, iv–vii (1910).</li>
+    <li>Levenberg, K. "A method for the solution of certain non-linear problems in least squares." <em>Quart. Appl. Math.</em> 2, 164–168 (1944).</li>
+  </ul>
+</section>
+
+<p style="text-align:center; color:var(--muted); margin-top:3rem; font-size:0.85rem;">
+  DoseCurve is free and open-source. All analysis runs in your browser — no data leaves your device.
+</p>
+
+</div>
+</body>
+</html>
