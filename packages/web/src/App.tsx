@@ -18,21 +18,11 @@ import DataEntry from './components/DataEntry.tsx';
 import DoseResponseChart from './components/DoseResponseChart.tsx';
 import ResultsPanel from './components/ResultsPanel.tsx';
 import Toolbar from './components/Toolbar.tsx';
-
-const DEMO_DATA = `Concentration\tResponse
-0.1\t98\t102\t100
-0.3\t96\t94\t97
-1\t90\t88\t92
-3\t75\t72\t78
-10\t50\t48\t52
-30\t25\t22\t28
-100\t10\t8\t12
-300\t3\t2\t5
-1000\t1\t0\t2`;
+import { SAMPLES } from './samples/index.ts';
 
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [rawData, setRawData] = useState(DEMO_DATA);
+  const [rawData, setRawData] = useState(SAMPLES[0].data);
   const [summary, setSummary] = useState<DataSummary[] | null>(null);
   const [results, setResults] = useState<AnalysisResults | null>(null);
   const [curvePoints, setCurvePoints] = useState<CurvePoint[] | null>(null);
@@ -87,6 +77,16 @@ export default function App() {
     URL.revokeObjectURL(url);
   }, [results, summary, curvePoints]);
 
+  const loadSample = useCallback((index: number) => {
+    setRawData(SAMPLES[index].data);
+    setSummary(null);
+    setResults(null);
+    setCurvePoints(null);
+    setFitParams(null);
+    setGof(null);
+    setError(null);
+  }, []);
+
   const handleExportChart = useCallback((format: 'png' | 'svg') => {
     if (!chartRef.current) return;
     const svg = chartRef.current.querySelector('svg');
@@ -139,6 +139,8 @@ export default function App() {
         onExportPNG={() => handleExportChart('png')}
         onExportSVG={() => handleExportChart('svg')}
         hasResults={!!results}
+        samples={SAMPLES}
+        onLoadSample={loadSample}
       />
 
       {error && (

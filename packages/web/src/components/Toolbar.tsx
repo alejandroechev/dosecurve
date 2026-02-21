@@ -1,3 +1,6 @@
+import { useState, useRef, useEffect } from 'react';
+import type { SampleDataset } from '../samples/index.ts';
+
 interface ToolbarProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
@@ -6,6 +9,8 @@ interface ToolbarProps {
   onExportPNG: () => void;
   onExportSVG: () => void;
   hasResults: boolean;
+  samples: SampleDataset[];
+  onLoadSample: (index: number) => void;
 }
 
 export default function Toolbar({
@@ -16,7 +21,22 @@ export default function Toolbar({
   onExportPNG,
   onExportSVG,
   hasResults,
+  samples,
+  onLoadSample,
 }: ToolbarProps) {
+  const [samplesOpen, setSamplesOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setSamplesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   return (
     <div className="toolbar">
       <h1>
@@ -25,6 +45,25 @@ export default function Toolbar({
       <button className="btn btn-primary" onClick={onFitCurve}>
         ▶ Fit Curve
       </button>
+      <div className="dropdown" ref={dropdownRef}>
+        <button className="btn" onClick={() => setSamplesOpen(!samplesOpen)}>
+          📂 Samples ▾
+        </button>
+        {samplesOpen && (
+          <div className="dropdown-menu">
+            {samples.map((s, i) => (
+              <button
+                key={i}
+                className="dropdown-item"
+                onClick={() => { onLoadSample(i); setSamplesOpen(false); }}
+                title={s.description}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       {hasResults && (
         <>
           <button className="btn" onClick={onExportCSV}>
