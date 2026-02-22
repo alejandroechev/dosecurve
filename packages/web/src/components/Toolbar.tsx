@@ -80,6 +80,9 @@ export default function Toolbar({
       <button className="btn" onClick={() => window.open('/intro.html', '_blank')}>
         📖 Guide
       </button>
+      <button className="btn" onClick={() => window.open('https://github.com/alejandroechev/dosecurve/issues/new', '_blank')} title="Feedback">
+        💬 Feedback
+      </button>
       <button className="btn" onClick={onToggleTheme}>
         {theme === 'light' ? '🌙' : '☀️'}
       </button>
