@@ -2,7 +2,7 @@
 
 **Free, open-source dose-response curve fitting and IC50 calculator — replaces the GraphPad Prism workflow.**
 
-![DoseCurve Screenshot](docs/screenshot-placeholder.png)
+![DoseCurve Screenshot](docs/screenshot.png)
 
 ## What It Does
 
