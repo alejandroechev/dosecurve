@@ -25,7 +25,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
+html, body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--fg);
@@ -52,7 +52,20 @@ body {
 .toolbar h1 {
   font-size: 1.25rem;
   font-weight: 700;
-  margin-right: auto;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar-spacer { flex: 1; }
+
+.toolbar-utils {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .toolbar h1 span { color: var(--accent); }
@@ -85,7 +98,7 @@ body {
   z-index: 100;
   min-width: 280px;
   margin-top: 4px;
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -97,14 +110,14 @@ body {
   padding: 8px 12px;
   border: none;
   background: none;
-  color: var(--text);
+  color: var(--fg);
   text-align: left;
   font-size: 0.85rem;
   cursor: pointer;
   white-space: nowrap;
 }
 .dropdown-item:hover {
-  background: var(--border);
+  background: var(--bg2);
 }
 
 /* Layout */
@@ -200,3 +213,23 @@ body {
   color: var(--fg2);
   text-align: center;
 }
+
+/* Panel header with inline actions */
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.panel-header h2 { margin-bottom: 0; }
+.panel-header-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+.btn-sm {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Hidden file input */
+.file-input-hidden { display: none; }

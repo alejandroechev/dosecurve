@@ -3,6 +3,7 @@ import type { AnalysisResults, GoodnessOfFit } from '@dosecurve/engine';
 interface Props {
   results: AnalysisResults;
   gof: GoodnessOfFit | null;
+  onExportCSV: () => void;
 }
 
 function fmt(n: number, digits = 4): string {
@@ -11,10 +12,13 @@ function fmt(n: number, digits = 4): string {
   return n.toFixed(digits);
 }
 
-export default function ResultsPanel({ results, gof }: Props) {
+export default function ResultsPanel({ results, gof, onExportCSV }: Props) {
   return (
     <div className="panel">
-      <h2>Results</h2>
+      <div className="panel-header">
+        <h2>Results</h2>
+        <button className="btn btn-sm" onClick={onExportCSV} title="Export results as CSV">📄 CSV</button>
+      </div>
       <div className="results-grid">
         <div className="result-item">
           <span className="result-label">IC50</span>

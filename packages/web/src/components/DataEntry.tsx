@@ -1,12 +1,16 @@
 interface DataEntryProps {
   value: string;
   onChange: (v: string) => void;
+  onExportCSV: () => void;
 }
 
-export default function DataEntry({ value, onChange }: DataEntryProps) {
+export default function DataEntry({ value, onChange, onExportCSV }: DataEntryProps) {
   return (
     <div className="panel" style={{ marginBottom: '1rem' }}>
-      <h2>Data Entry</h2>
+      <div className="panel-header">
+        <h2>Data Entry</h2>
+        <button className="btn btn-sm" onClick={onExportCSV} title="Export input data as CSV">📄 CSV</button>
+      </div>
       <textarea
         className="data-textarea"
         value={value}

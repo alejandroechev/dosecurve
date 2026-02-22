@@ -5,10 +5,7 @@ interface ToolbarProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   onFitCurve: () => void;
-  onExportCSV: () => void;
-  onExportPNG: () => void;
-  onExportSVG: () => void;
-  hasResults: boolean;
+  onFileUpload: (content: string) => void;
   samples: SampleDataset[];
   onLoadSample: (index: number) => void;
 }
@@ -17,15 +14,13 @@ export default function Toolbar({
   theme,
   onToggleTheme,
   onFitCurve,
-  onExportCSV,
-  onExportPNG,
-  onExportSVG,
-  hasResults,
+  onFileUpload,
   samples,
   onLoadSample,
 }: ToolbarProps) {
   const [samplesOpen, setSamplesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -42,50 +37,60 @@ export default function Toolbar({
       <h1>
         <span>Dose</span>Curve
       </h1>
-      <button className="btn btn-primary" onClick={onFitCurve}>
-        ▶ Fit Curve
-      </button>
-      <div className="dropdown" ref={dropdownRef}>
-        <button className="btn" onClick={() => setSamplesOpen(!samplesOpen)}>
-          📂 Samples ▾
+      <div className="toolbar-actions">
+        <div className="dropdown" ref={dropdownRef}>
+          <button className="btn" onClick={() => setSamplesOpen(!samplesOpen)}>
+            🧪 Samples ▾
+          </button>
+          {samplesOpen && (
+            <div className="dropdown-menu">
+              {samples.map((s, i) => (
+                <button
+                  key={i}
+                  className="dropdown-item"
+                  onClick={() => { onLoadSample(i); setSamplesOpen(false); }}
+                  title={s.description}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,.tsv,.txt"
+          className="file-input-hidden"
+          data-testid="file-input"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => onFileUpload(reader.result as string);
+            reader.readAsText(file);
+            e.target.value = '';
+          }}
+        />
+        <button className="btn" onClick={() => fileInputRef.current?.click()}>
+          📂 Upload
         </button>
-        {samplesOpen && (
-          <div className="dropdown-menu">
-            {samples.map((s, i) => (
-              <button
-                key={i}
-                className="dropdown-item"
-                onClick={() => { onLoadSample(i); setSamplesOpen(false); }}
-                title={s.description}
-              >
-                {s.name}
-              </button>
-            ))}
-          </div>
-        )}
+        <button className="btn btn-primary" onClick={onFitCurve}>
+          ▶ Fit Curve
+        </button>
       </div>
-      {hasResults && (
-        <>
-          <button className="btn" onClick={onExportCSV}>
-            📄 CSV
-          </button>
-          <button className="btn" onClick={onExportPNG}>
-            🖼 PNG
-          </button>
-          <button className="btn" onClick={onExportSVG}>
-            📐 SVG
-          </button>
-        </>
-      )}
-      <button className="btn" onClick={() => window.open('/intro.html', '_blank')}>
-        📖 Guide
-      </button>
-      <button className="btn" onClick={() => window.open('https://github.com/alejandroechev/dosecurve/issues/new', '_blank')} title="Feedback">
-        💬 Feedback
-      </button>
-      <button className="btn" onClick={onToggleTheme}>
-        {theme === 'light' ? '🌙' : '☀️'}
-      </button>
+      <div className="toolbar-spacer" />
+      <div className="toolbar-utils">
+        <button className="btn" onClick={() => window.open('/intro.html', '_blank')}>
+          📖 Guide
+        </button>
+        <button className="btn" onClick={() => window.open('https://github.com/alejandroechev/dosecurve/issues/new', '_blank')} title="Feedback">
+          💬 Feedback
+        </button>
+        <button className="btn" onClick={onToggleTheme}>
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+      </div>
     </div>
   );
 }

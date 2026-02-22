@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import {
   parseData,
   summarize,
@@ -21,7 +21,9 @@ import Toolbar from './components/Toolbar.tsx';
 import { SAMPLES } from './samples/index.ts';
 
 export default function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('dosecurve-theme') as 'light' | 'dark') || 'light';
+  });
   const [rawData, setRawData] = useState(SAMPLES[0].data);
   const [summary, setSummary] = useState<DataSummary[] | null>(null);
   const [results, setResults] = useState<AnalysisResults | null>(null);
@@ -30,6 +32,12 @@ export default function App() {
   const [gof, setGof] = useState<GoodnessOfFit | null>(null);
   const [error, setError] = useState<string | null>(null);
   const chartRef = useRef<HTMLDivElement>(null);
+
+  // Sync theme to html element and localStorage
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('dosecurve-theme', theme);
+  }, [theme]);
 
   const toggleTheme = useCallback(() => {
     setTheme((t) => (t === 'light' ? 'dark' : 'light'));
@@ -65,7 +73,7 @@ export default function App() {
     }
   }, [rawData]);
 
-  const handleExportCSV = useCallback(() => {
+  const handleExportResultsCSV = useCallback(() => {
     if (!results || !summary || !curvePoints) return;
     const csv = exportResultsCSV(results, summary, curvePoints);
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -77,8 +85,28 @@ export default function App() {
     URL.revokeObjectURL(url);
   }, [results, summary, curvePoints]);
 
+  const handleExportInputCSV = useCallback(() => {
+    const blob = new Blob([rawData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dosecurve-input.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [rawData]);
+
   const loadSample = useCallback((index: number) => {
     setRawData(SAMPLES[index].data);
+    setSummary(null);
+    setResults(null);
+    setCurvePoints(null);
+    setFitParams(null);
+    setGof(null);
+    setError(null);
+  }, []);
+
+  const handleFileUpload = useCallback((content: string) => {
+    setRawData(content);
     setSummary(null);
     setResults(null);
     setCurvePoints(null);
@@ -135,10 +163,7 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onFitCurve={runFit}
-        onExportCSV={handleExportCSV}
-        onExportPNG={() => handleExportChart('png')}
-        onExportSVG={() => handleExportChart('svg')}
-        hasResults={!!results}
+        onFileUpload={handleFileUpload}
         samples={SAMPLES}
         onLoadSample={loadSample}
       />
@@ -151,12 +176,20 @@ export default function App() {
 
       <div className="main-grid">
         <div>
-          <DataEntry value={rawData} onChange={setRawData} />
-          {results && <ResultsPanel results={results} gof={gof} />}
+          <DataEntry value={rawData} onChange={setRawData} onExportCSV={handleExportInputCSV} />
+          {results && <ResultsPanel results={results} gof={gof} onExportCSV={handleExportResultsCSV} />}
         </div>
         <div className="right-col">
           <div className="panel" ref={chartRef}>
-            <h2>Dose-Response Curve</h2>
+            <div className="panel-header">
+              <h2>Dose-Response Curve</h2>
+              {summary && curvePoints && fitParams && (
+                <div className="panel-header-actions">
+                  <button className="btn btn-sm" onClick={() => handleExportChart('png')} title="Export chart as PNG">🖼 PNG</button>
+                  <button className="btn btn-sm" onClick={() => handleExportChart('svg')} title="Export chart as SVG">📐 SVG</button>
+                </div>
+              )}
+            </div>
             {summary && curvePoints && fitParams ? (
               <DoseResponseChart
                 summary={summary}
