@@ -210,3 +210,31 @@ test('all same response values shows error or degenerate fit', async ({ page }) 
   const hasResults = await resultsLabel(page).isVisible().catch(() => false);
   expect(hasError || hasResults).toBe(true);
 });
+
+// ── 12. State Persistence ────────────────────────────────────────────
+test('textarea data persists across page reload', async ({ page }) => {
+  await page.goto('/');
+  const textarea = page.locator('textarea');
+  const customData = `Concentration\tResponse\n1\t90\n10\t50\n100\t10`;
+  await textarea.fill(customData);
+  // Wait for debounced save
+  await page.waitForTimeout(700);
+  // Verify saved
+  const stored = await page.evaluate(() => localStorage.getItem('dosecurve-state'));
+  expect(stored).toBeTruthy();
+  // Reload and verify textarea contains our data
+  await page.reload();
+  await expect(page.locator('textarea')).toContainText('1\t90');
+});
+
+// ── 13. Button Order ─────────────────────────────────────────────────
+test('toolbar button order: Upload, Samples, Fit Curve', async ({ page }) => {
+  await page.goto('/');
+  const actions = page.locator('.toolbar-actions > *');
+  const texts = await actions.allTextContents();
+  const uploadIdx = texts.findIndex(t => t.includes('Upload'));
+  const samplesIdx = texts.findIndex(t => t.includes('Samples'));
+  const fitIdx = texts.findIndex(t => t.includes('Fit Curve'));
+  expect(uploadIdx).toBeLessThan(samplesIdx);
+  expect(samplesIdx).toBeLessThan(fitIdx);
+});

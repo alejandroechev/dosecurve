@@ -24,7 +24,16 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('dosecurve-theme') as 'light' | 'dark') || 'light';
   });
-  const [rawData, setRawData] = useState(SAMPLES[0].data);
+  const [rawData, setRawData] = useState(() => {
+    try {
+      const saved = localStorage.getItem('dosecurve-state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.rawData) return parsed.rawData as string;
+      }
+    } catch { /* ignore */ }
+    return SAMPLES[0].data;
+  });
   const [summary, setSummary] = useState<DataSummary[] | null>(null);
   const [results, setResults] = useState<AnalysisResults | null>(null);
   const [curvePoints, setCurvePoints] = useState<CurvePoint[] | null>(null);
@@ -38,6 +47,14 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('dosecurve-theme', theme);
   }, [theme]);
+
+  // Auto-save rawData to localStorage
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try { localStorage.setItem('dosecurve-state', JSON.stringify({ rawData })); } catch { /* ignore */ }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [rawData]);
 
   const toggleTheme = useCallback(() => {
     setTheme((t) => (t === 'light' ? 'dark' : 'light'));

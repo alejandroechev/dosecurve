@@ -38,6 +38,24 @@ export default function Toolbar({
         <span>Dose</span>Curve
       </h1>
       <div className="toolbar-actions">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,.tsv,.txt"
+          className="file-input-hidden"
+          data-testid="file-input"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => onFileUpload(reader.result as string);
+            reader.readAsText(file);
+            e.target.value = '';
+          }}
+        />
+        <button className="btn" onClick={() => fileInputRef.current?.click()}>
+          📂 Upload
+        </button>
         <div className="dropdown" ref={dropdownRef}>
           <button className="btn" onClick={() => setSamplesOpen(!samplesOpen)}>
             🧪 Samples ▾
@@ -57,24 +75,6 @@ export default function Toolbar({
             </div>
           )}
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv,.tsv,.txt"
-          className="file-input-hidden"
-          data-testid="file-input"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = () => onFileUpload(reader.result as string);
-            reader.readAsText(file);
-            e.target.value = '';
-          }}
-        />
-        <button className="btn" onClick={() => fileInputRef.current?.click()}>
-          📂 Upload
-        </button>
         <button className="btn btn-primary" onClick={onFitCurve}>
           ▶ Fit Curve
         </button>
