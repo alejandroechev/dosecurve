@@ -27,7 +27,7 @@ Would love feedback from pharmacologists — what's missing to make this actuall
 
 **Body:**
 
-Tired of needing a GraphPad Prism license just to fit an IC50 curve? I built DoseCurve — a free browser-based tool that does 4-parameter logistic dose-response fitting with confidence intervals and R².
+I built DoseCurve — a free browser-based tool for IC50 analysis with 4-parameter logistic dose-response fitting, confidence intervals, and R².
 
 Paste your data, get your IC50, Hill slope, and a publication-ready plot. No install, no account needed.
 
