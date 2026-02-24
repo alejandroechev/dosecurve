@@ -4,7 +4,7 @@
 
 ## Post 1: r/pharmacology
 
-**Title:** I built a free browser-based IC50 / dose-response curve fitter — no GraphPad needed
+**Title:** I built a free browser-based IC50 / dose-response curve fitter
 
 **Body:**
 
@@ -12,7 +12,7 @@ Built a free web app called DoseCurve for dose-response analysis. It fits a 4-pa
 
 Uses Levenberg-Marquardt optimization under the hood. Just paste your concentration and response data, and it fits the curve and reports all parameters with goodness of fit.
 
-No install, no login, no GraphPad license. Runs entirely in your browser — no data sent to any server.
+No install or login required. Runs entirely in your browser — no data sent to any server.
 
 🔗 **Live:** https://dosecurve.vercel.app
 📂 **Source:** https://github.com/alejandroechev/dosecurve
@@ -23,7 +23,7 @@ Would love feedback from pharmacologists — what's missing to make this actuall
 
 ## Post 2: r/labrats
 
-**Title:** Free IC50 curve fitter that runs in your browser — 4PL dose-response analysis without expensive software
+**Title:** Free IC50 curve fitter that runs in your browser — 4PL dose-response analysis
 
 **Body:**
 
@@ -52,3 +52,4 @@ Pure TypeScript engine, runs client-side, no dependencies on external servers. O
 📂 https://github.com/alejandroechev/dosecurve
 
 Feedback welcome — especially on data import formats and batch analysis needs.
+
