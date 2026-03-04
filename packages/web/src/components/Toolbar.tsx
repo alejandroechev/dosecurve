@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import type { SampleDataset } from '../samples/index.ts';
-import { FeedbackModal } from './FeedbackModal';
 
 interface ToolbarProps {
   theme: 'light' | 'dark';
@@ -20,8 +19,7 @@ export default function Toolbar({
   onLoadSample,
 }: ToolbarProps) {
   const [samplesOpen, setSamplesOpen] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef= useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -86,15 +84,12 @@ export default function Toolbar({
         <button className="btn" onClick={() => window.open('/intro.html', '_blank')}>
           📖 Guide
         </button>
-        <button className="btn" onClick={() => setShowFeedback(true)} title="Feedback">
-          💬 Feedback
-        </button>
+        <a href="https://github.com/alejandroechev/dosecurve/issues" target="_blank" rel="noopener noreferrer" className="github-link">💬 Feedback</a>
         <a className="github-link" href="https://github.com/alejandroechev/dosecurve" target="_blank" rel="noopener noreferrer">GitHub</a>
         <button className="btn" onClick={onToggleTheme}>
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
       </div>
-      {showFeedback && <FeedbackModal product="DoseCurve" onClose={() => setShowFeedback(false)} />}
     </div>
   );
 }
